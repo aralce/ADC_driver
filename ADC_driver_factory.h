@@ -1,5 +1,5 @@
 #pragma once
-#include "ADC_driver_api.h"
+#include <ADC_driver_api.h>
 
 enum class adc_model{ADC_ADS1115_driver, ADC_MCP342x_driver};
 #define ADC_DEFAULT_MODEL   adc_model::ADC_MCP342x_driver
