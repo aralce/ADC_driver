@@ -18,22 +18,9 @@ $ export CPPUTEST_HOME=$(pwd)
 ## HOW DO I RUN THE TESTS?
 - If the system is configured, then run the following command on your terminal `$ make`. You have to run the command from this folder.
 
-## HOW DO I GENERATE A COVERAGE REPORT?
-- If you can run a test, then to generate a coverage report you need to run the following command `$ make coverage`.  
   
 ***NOTE***: If you run a test after generate a coverage report, you can see warnings messages. To avoid warnings you need to run: `$ make clean`
-
-## HOW IS THIS FOLDER STRUCTURED?
-
-### cpputest  
-Repository of the test tool.
   
-### mock_interface  
-Has the mock files.
-  
-### support  
-It has useful functions and classes for tests.
-   
 ### makefile  
 Have the recipe to run the tests.
 
