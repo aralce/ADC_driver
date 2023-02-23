@@ -1,7 +1,9 @@
+name_of_test = "ADC_driver -> ADS1115_driver"
+
 TEST_MAIN_FOLDER_DIR = ./
-MAIN_TEST_FOLDER_DIR = ../../../
+MAIN_TEST_FOLDER_DIR = ../
 MAIN_PROGRAM_DIR = $(MAIN_TEST_FOLDER_DIR)../
-UNDER_TES_PROGRAM_DIR = $(MAIN_PROGRAM_DIR)HAL_implementation/HAL_for_ESP32/ADC_driver/ADC_ADS1115_driver/
+UNDER_TES_PROGRAM_DIR = $(MAIN_PROGRAM_DIR)Implementation/ADC_ADS1115_driver/
 ARDUINO_MOCK_DIR = $(MAIN_TEST_FOLDER_DIR)mocks/arduino/
 ADC_LIBRARY_DIR = $(MAIN_TEST_FOLDER_DIR)mocks/ADC_library/ESP32/ADC_ADS1115_driver/
 
@@ -10,7 +12,7 @@ vpath %.cpp $(UNDER_TES_PROGRAM_DIR)
 vpath %.cpp %.h $(ARDUINO_MOCK_DIR)
 vpath %.cpp %.h $(ADC_LIBRARY_DIR)
 
-CPPUTEST_HOME = ../../../cpputest/
+CPPUTEST_HOME = ../cpputest/
 
 COMPILER_INCLUDE_FLAGS  = -I$(CPPUTEST_HOME)include
 COMPILER_INCLUDE_FLAGS += -I$(ARDUINO_MOCK_DIR)
@@ -30,7 +32,7 @@ LD_LIBRARIES  = -L$(CPPUTEST_HOME)lib -lCppUTest -lCppUTestExt
 BUILD_OUTPUT_DIR = build/
 
 all: create_build_folder link_objects_of_tests
-	@echo "Hardware_abstraction_layer -> ESP32 -> ADC_driver -> ADS1115_driver"
+	@echo $(name_of_test)
 	@$(BUILD_OUTPUT_DIR)tests.out
 
 clean:
@@ -55,4 +57,4 @@ $(BUILD_OUTPUT_DIR)%.o : %.cpp %.h
 	@$(CXX) $(CXXFLAGS) $< $(LD_LIBRARIES) -c -o $@
 
 print:
-	@ls $(UNDER_TES_PROGRAM_DIR)
+	@echo $(OBJECT_FILES_ON_DIR)

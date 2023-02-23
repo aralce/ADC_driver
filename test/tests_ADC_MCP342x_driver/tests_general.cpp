@@ -1,6 +1,6 @@
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
-#include <HAL_implementation/HAL_for_ESP32/ADC_driver/ADC_MCP342x_driver/ADC_MCP342x_driver.h>
+#include <Implementation/ADC_MCP342x_driver/ADC_MCP342x_driver.h>
 
 ADC_MCP342x_driver* adc_driver = nullptr;
 

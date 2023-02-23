@@ -1,9 +1,9 @@
-#include <HAL_implementation/HAL_for_ESP32/ADC_driver/ADC_ADS1115_driver/ADC_ADS1115_driver.h>
+#include <Implementation/ADC_ADS1115_driver/ADC_ADS1115_driver.h>
 #include <Arduino.h>
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
 
-HAL_ADC_api* adc_driver = nullptr;
+ADC_driver_api* adc_driver = nullptr;
 #define DEFAULT_INPUT_CHANNEL   (uint32_t)adc_channel::ADC_DRIVER_CHANNEL_1
 
 TEST_GROUP(ADC_ADS1115_driver)
