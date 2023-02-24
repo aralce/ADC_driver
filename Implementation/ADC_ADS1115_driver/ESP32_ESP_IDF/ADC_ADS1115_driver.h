@@ -1,9 +1,12 @@
 #pragma once
-#include <ADC_driver_api.h>
-#include <Adafruit_ADS1X15.h>
+#include "../../../ADC_driver_config.h"
+#ifdef ESP32_WITH_ESP_IDF
 
-#define ADC_CHANNEL_1   MUX_BY_CHANNEL[0]
-#define ADC_CHANNEL_2   MUX_BY_CHANNEL[1]
+#include <ADC_driver_api.h>
+#include "adc_library/ads1115.h"
+
+#define ADC_CHANNEL_1   ADS1115_MUX_0_GND
+#define ADC_CHANNEL_2   ADS1115_MUX_1_GND
 
 class ADC_ADS1115_driver : public ADC_driver_api {
 public:
@@ -19,6 +22,7 @@ public:
     float get_measured_voltage() override;
 
 private:
-    Adafruit_ADS1115 adc_driver;
-    adc_channel input_channel = adc_channel::ADC_DRIVER_CHANNEL_1;
+
 };
+
+#endif // ESP32_WITH_ESP_IDF

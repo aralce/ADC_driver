@@ -1,4 +1,7 @@
 #include "ADC_ADS1115_driver.h"
+
+#if defined(ESP32_WITH_ARDUINO) || defined(IS_RUNNING_TESTS)
+
 #include <Arduino.h>
 
 #define SERIAL_PORT_BAUDRATE    115200UL
@@ -43,3 +46,5 @@ float ADC_ADS1115_driver::get_measured_voltage() {
     int16_t raw_value = adc_driver.getLastConversionResults();
     return adc_driver.computeVolts(raw_value);
 }
+
+#endif // ESP32_WITH_ARDUINO

@@ -1,3 +1,6 @@
 [submodule "test/cpputest"]
 	path = test/cpputest
 	url = git@github.com:aralce/cpputest.git
+[submodule "Implementation/ADC_ADS1115_driver/ESP32_Arduino/Adafruit_ADS1X15"]
+	path = Implementation/ADC_ADS1115_driver/ESP32_Arduino/Adafruit_ADS1X15
+	url = git@github.com:adafruit/Adafruit_ADS1X15.git

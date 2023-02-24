@@ -1,4 +1,4 @@
-#include <Implementation/ADC_ADS1115_driver/ADC_ADS1115_driver.h>
+#include <Implementation/ADC_ADS1115_driver/ESP32_Arduino/ADC_ADS1115_driver.h>
 #include <Arduino.h>
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
@@ -6,7 +6,7 @@
 ADC_driver_api* adc_driver = nullptr;
 #define DEFAULT_INPUT_CHANNEL   (uint32_t)adc_channel::ADC_DRIVER_CHANNEL_1
 
-TEST_GROUP(ADC_ADS1115_driver)
+TEST_GROUP(ADC_ADS1115_driver_esp32_arduino)
 {
     void setup()
     {
@@ -23,13 +23,8 @@ TEST_GROUP(ADC_ADS1115_driver)
     }
 };
 
-TEST(ADC_ADS1115_driver, init)
-{
-
-}
-
 #define SERIAL_PORT_BAUDRATE    115200UL
-TEST(ADC_ADS1115_driver, initialize_ADC_driver_with_no_issues_and_INITIALIZE_SERIAL_PORT_to_communicate_errors)
+TEST(ADC_ADS1115_driver_esp32_arduino, initialize_ADC_driver_with_no_issues_and_INITIALIZE_SERIAL_PORT_to_communicate_errors)
 {
     mock().expectOneCall("Serial->begin")
           .withUnsignedIntParameter("baudrate", SERIAL_PORT_BAUDRATE)
@@ -43,7 +38,7 @@ TEST(ADC_ADS1115_driver, initialize_ADC_driver_with_no_issues_and_INITIALIZE_SER
     adc_driver->initialize();
 }
 
-TEST(ADC_ADS1115_driver, if_begin_fails_then_shows_a_message_and_hangs_the_micro_controller)
+TEST(ADC_ADS1115_driver_esp32_arduino, if_begin_fails_then_shows_a_message_and_hangs_the_micro_controller)
 {
     mock().expectOneCall("Adafruit_ADS1115->begin")
           .andReturnValue(false);
@@ -56,12 +51,12 @@ TEST(ADC_ADS1115_driver, if_begin_fails_then_shows_a_message_and_hangs_the_micro
     adc_driver->initialize();
 }
 
-TEST(ADC_ADS1115_driver, default_input_channel_is_ADC_DRIVER_CHANNEL_1)
+TEST(ADC_ADS1115_driver_esp32_arduino, default_input_channel_is_ADC_DRIVER_CHANNEL_1)
 {
     CHECK_EQUAL(DEFAULT_INPUT_CHANNEL, (uint32_t)adc_driver->get_input_channel());
 }
 
-TEST(ADC_ADS1115_driver, set_input_channel){
+TEST(ADC_ADS1115_driver_esp32_arduino, set_input_channel){
     adc_driver->set_input_channel(adc_channel::ADC_DRIVER_CHANNEL_1);
     CHECK_EQUAL((uint32_t)adc_channel::ADC_DRIVER_CHANNEL_1, (uint32_t)adc_driver->get_input_channel());
 
@@ -69,7 +64,7 @@ TEST(ADC_ADS1115_driver, set_input_channel){
     CHECK_EQUAL((uint32_t)adc_channel::ADC_DRIVER_CHANNEL_2, (uint32_t)adc_driver->get_input_channel());
 }
 
-TEST(ADC_ADS1115_driver, is_conversion_complete)
+TEST(ADC_ADS1115_driver_esp32_arduino, is_conversion_complete)
 {
     mock().expectOneCall("Adafruit_ADS1115->conversionComplete")
           .andReturnValue(true);
@@ -80,7 +75,7 @@ TEST(ADC_ADS1115_driver, is_conversion_complete)
     CHECK_FALSE(adc_driver->is_conversion_complete());
 }
 
-TEST(ADC_ADS1115_driver, get_measured_voltage)
+TEST(ADC_ADS1115_driver_esp32_arduino, get_measured_voltage)
 {
     const int16_t EXPECTED_RAW_VALUE = 1024;
     const float EXPECTED_VOLTAGE = 22.5;
@@ -93,7 +88,7 @@ TEST(ADC_ADS1115_driver, get_measured_voltage)
     CHECK_EQUAL(EXPECTED_VOLTAGE, adc_driver->get_measured_voltage());
 }
 
-TEST(ADC_ADS1115_driver, start_new_single_reading_when_channel_is_ADC_DRIVER_CHANNEL_1)
+TEST(ADC_ADS1115_driver_esp32_arduino, start_new_single_reading_when_channel_is_ADC_DRIVER_CHANNEL_1)
 {
     CHECK_EQUAL((uint32_t)adc_channel::ADC_DRIVER_CHANNEL_1, (uint32_t)adc_driver->get_input_channel());
 
@@ -104,7 +99,7 @@ TEST(ADC_ADS1115_driver, start_new_single_reading_when_channel_is_ADC_DRIVER_CHA
     adc_driver->start_new_single_reading();
 }
 
-TEST(ADC_ADS1115_driver, start_new_single_reading_when_channel_is_ADC_DRIVER_CHANNEL_2)
+TEST(ADC_ADS1115_driver_esp32_arduino, start_new_single_reading_when_channel_is_ADC_DRIVER_CHANNEL_2)
 {
     adc_driver->set_input_channel(adc_channel::ADC_DRIVER_CHANNEL_2);
 
