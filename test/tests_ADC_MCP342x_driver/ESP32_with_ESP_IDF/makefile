@@ -1,13 +1,13 @@
-name_of_test = "ADC_driver -> MCP342x"
+name_of_test = "ADC_driver -> MCP342x -> ESP32_with_Arduino"
 
 TEST_MAIN_FOLDER_DIR = ./
-MAIN_TEST_FOLDER_DIR = ../
+MAIN_TEST_FOLDER_DIR = ../../
 MAIN_PROGRAM_DIR = $(MAIN_TEST_FOLDER_DIR)../
 UNDER_TEST_PROGRAM_DIR = $(MAIN_PROGRAM_DIR)Implementation/ADC_MCP342x_driver/
 ARDUINO_MOCK_DIR = $(MAIN_TEST_FOLDER_DIR)mocks/arduino/
-ADC_LIBRARY_DIR = $(MAIN_TEST_FOLDER_DIR)mocks/ADC_library/ESP32/ADC_MCP342x_driver/
+ADC_LIBRARY_DIR = $(MAIN_TEST_FOLDER_DIR)mocks/ADC_library/ADC_firmware/ADC_MCP342x_driver/
 
-CPPUTEST_HOME = ../cpputest/
+CPPUTEST_HOME = ../../cpputest/
 
 COMPILER_INCLUDE_FLAGS  = -I$(CPPUTEST_HOME)include
 COMPILER_INCLUDE_FLAGS += -I$(ARDUINO_MOCK_DIR)
@@ -45,6 +45,8 @@ OBJECT_FILES_ON_DIR = $(addprefix $(BUILD_OUTPUT_DIR),$(OBJECT_FILES))
 link_objects_of_tests: $(OBJECT_FILES_ON_DIR)
 	@$(CXX) $(CXXFLAGS) $^ $(LD_LIBRARIES) -o $(BUILD_OUTPUT_DIR)tests.out
 
+.INTERMEDIATE: $(OBJECT_FILES_ON_DIR)
+
 vpath %.cpp $(TEST_MAIN_FOLDER_DIR)
 vpath %.cpp $(UNDER_TEST_PROGRAM_DIR)
 vpath %.cpp %.h $(ARDUINO_MOCK_DIR)
@@ -57,4 +59,4 @@ $(BUILD_OUTPUT_DIR)%.o : %.cpp %.h
 	@$(CXX) $(CXXFLAGS) $< $(LD_LIBRARIES) -c -o $@
 
 print:
-	@echo $(OBJECT_FILES_ON_DIR)
+	@ls $(ADC_LIBRARY_DIR)
