@@ -88,15 +88,18 @@ typedef struct {
 ads1115_t ads1115_config(i2c_port_t i2c_port, uint8_t address); // set up configuration
 
 // set configuration
-void ads1115_set_rdy_pin(ads1115_t* ads, gpio_num_t gpio); // set up data-ready pin
 void ads1115_set_mux(ads1115_t* ads, ads1115_mux_t mux); // set multiplexer
 void ads1115_set_pga(ads1115_t* ads, ads1115_fsr_t fsr); // set fsr
 void ads1115_set_mode(ads1115_t* ads, ads1115_mode_t mode); // set read mode
 void ads1115_set_sps(ads1115_t* ads, ads1115_sps_t sps); // set sampling speed
 void ads1115_set_max_ticks(ads1115_t* ads, TickType_t max_ticks); // maximum wait ticks for i2c bus
 
+void ads1115_startConversion(ads1115_t* ads); // start conversion
+
 int16_t ads1115_get_raw(ads1115_t* ads); // get voltage in bits
 double ads1115_get_voltage(ads1115_t* ads); // get voltage in volts
+
+bool ads1115_conversionComplete(ads1115_t* ads);
 
 #endif // ifdef ADS1115_H
 

@@ -3,6 +3,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
+#include "driver/i2c.h"
 #include "esp_log.h"
 
 static void IRAM_ATTR gpio_isr_handler(void* arg) {
@@ -72,38 +73,24 @@ ads1115_t ads1115_config(i2c_port_t i2c_port, uint8_t address) {
   ads.last_reg = ADS1115_MAX_REGISTER_ADDR; // say that we accessed invalid register last
   ads.changed = 1; // say we changed the configuration
   ads.max_ticks = 10/portTICK_PERIOD_MS;
+
+  i2c_config_t i2c_config = {
+    .mode = I2C_MODE_MASTER,
+    .sda_io_num = GPIO_NUM_21,
+    .sda_pullup_en = GPIO_PULLUP_ENABLE,
+    .scl_io_num = GPIO_NUM_22,
+    .scl_pullup_en = GPIO_PULLUP_ENABLE,
+    .master.clk_speed = 100000L,
+    .clk_flags = 0,
+  };
+  i2c_param_config(i2c_port, &i2c_config);
+  i2c_driver_install(i2c_port, I2C_MODE_MASTER, 0, 0, 0);
   return ads; // return the completed configuration
 }
 
 void ads1115_set_mux(ads1115_t* ads, ads1115_mux_t mux) {
   ads->config.bit.MUX = mux;
   ads->changed = 1;
-}
-
-void ads1115_set_rdy_pin(ads1115_t* ads, gpio_num_t gpio) {
-  const static char* TAG = "ads1115_set_rdy_pin";
-  gpio_config_t io_conf;
-  esp_err_t err;
-
-  io_conf.intr_type = GPIO_PIN_INTR_NEGEDGE; // positive to negative (pulled down)
-  io_conf.pin_bit_mask = 1<<gpio;
-  io_conf.mode = GPIO_MODE_INPUT;
-  io_conf.pull_up_en = 1;
-  io_conf.pull_down_en = 0;
-  gpio_config(&io_conf); // set gpio configuration
-
-  ads->rdy_pin.gpio_evt_queue = xQueueCreate(1, sizeof(bool));
-  gpio_install_isr_service(0);
-
-  ads->rdy_pin.in_use = 1;
-  ads->rdy_pin.pin = gpio;
-  ads->config.bit.COMP_QUE = 0b00; // assert after one conversion
-  ads->changed = 1;
-
-  err = ads1115_write_register(ads, ADS1115_LO_THRESH_REGISTER_ADDR,0); // set lo threshold to minimum
-  if(err) ESP_LOGE(TAG,"could not set low threshold: %s",esp_err_to_name(err));
-  err = ads1115_write_register(ads, ADS1115_HI_THRESH_REGISTER_ADDR,0xFFFF); // set hi threshold to maximum
-  if(err) ESP_LOGE(TAG,"could not set high threshold: %s",esp_err_to_name(err));
 }
 
 void ads1115_set_pga(ads1115_t* ads, ads1115_fsr_t fsr) {
@@ -125,42 +112,22 @@ void ads1115_set_max_ticks(ads1115_t* ads, TickType_t max_ticks) {
   ads->max_ticks = max_ticks;
 }
 
-int16_t ads1115_get_raw(ads1115_t* ads) {
-  const static char* TAG = "ads1115_get_raw";
-  const static uint16_t sps[] = {8,16,32,64,128,250,475,860};
-  const static uint8_t len = 2;
-  uint8_t data[2];
-  esp_err_t err;
-  bool tmp; // temporary bool for reading from queue
-
-  if(ads->rdy_pin.in_use) {
-    gpio_isr_handler_add(ads->rdy_pin.pin, gpio_isr_handler, (void*)ads->rdy_pin.gpio_evt_queue);
-    xQueueReset(ads->rdy_pin.gpio_evt_queue);
-  }
+void ads1115_startConversion(ads1115_t* ads) {
+  const static char* TAG = "ads1115_startConversion";
   // see if we need to send configuration data
   if((ads->config.bit.MODE==ADS1115_MODE_SINGLE) || (ads->changed)) { // if it's single-ended or a setting changed
-    err = ads1115_write_register(ads, ADS1115_CONFIG_REGISTER_ADDR, ads->config.reg);
-    if(err) {
+    esp_err_t err = ads1115_write_register(ads, ADS1115_CONFIG_REGISTER_ADDR, ads->config.reg);
+    if(err)
       ESP_LOGE(TAG,"could not write to device: %s",esp_err_to_name(err));
-      if(ads->rdy_pin.in_use) {
-        gpio_isr_handler_remove(ads->rdy_pin.pin);
-        xQueueReset(ads->rdy_pin.gpio_evt_queue);
-      }
-      return 0;
-    }
     ads->changed = 0; // say that the data is unchanged now
   }
+}
 
-  if(ads->rdy_pin.in_use) {
-    xQueueReceive(ads->rdy_pin.gpio_evt_queue, &tmp, portMAX_DELAY);
-    gpio_isr_handler_remove(ads->rdy_pin.pin);
-  }
-  else {
-    // wait for 1 ms longer than the sampling rate, plus a little bit for rounding
-    vTaskDelay((((1000/sps[ads->config.bit.DR]) + 1) / portTICK_PERIOD_MS)+1);
-  }
-
-  err = ads1115_read_register(ads, ADS1115_CONVERSION_REGISTER_ADDR, data, len);
+int16_t ads1115_get_raw(ads1115_t* ads) {
+  const static char* TAG = "ads1115_get_raw";
+  const static uint8_t len = 2;
+  uint8_t data[2];
+  esp_err_t err = ads1115_read_register(ads, ADS1115_CONVERSION_REGISTER_ADDR, data, len);
   if(err) {
     ESP_LOGE(TAG,"could not read from device: %s",esp_err_to_name(err));
     return 0;
@@ -175,4 +142,18 @@ double ads1115_get_voltage(ads1115_t* ads) {
 
   raw = ads1115_get_raw(ads);
   return (double)raw * fsr[ads->config.bit.PGA] / (double)bits;
+}
+
+#define READ_STATUS_MASK_ON_CONFIG_REGISTER_2nd_BYTE 0x80 
+bool ads1115_conversionComplete(ads1115_t* ads) {
+  const static char* TAG = "ads1115_conversionComplete";
+  
+  uint8_t data[2];
+  esp_err_t err = ads1115_read_register(ads, ADS1115_CONFIG_REGISTER_ADDR, data, sizeof(data));
+  if (err) {
+    ESP_LOGE(TAG, "could not read config register from device: %s", esp_err_to_name(err));
+    return false;
+  }
+
+  return data[1] & READ_STATUS_MASK_ON_CONFIG_REGISTER_2nd_BYTE != 0;
 }

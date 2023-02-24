@@ -114,7 +114,7 @@ typedef struct {
 typedef uint32_t TickType_t;
 
 // initialize device
-ads1115_t ads1115_config(int i2c_port, uint8_t address) // set up configuration
+inline ads1115_t ads1115_config(int i2c_port, uint8_t address) // set up configuration
 {
     mock().actualCall("ads1115_config")
           .withIntParameter("i2c_port", i2c_port)
@@ -124,60 +124,65 @@ ads1115_t ads1115_config(int i2c_port, uint8_t address) // set up configuration
 }
 
 // set configuration
-void ads1115_set_rdy_pin(ads1115_t* ads, gpio_num_t gpio) // set up data-ready pin
-{
-    mock().actualCall("ads1115_set_rdy_pin")
-          .withPointerParameter("ads", ads)
-          .withIntParameter("gpio", (int)gpio);
-} 
-
-void ads1115_set_mux(ads1115_t* ads, ads1115_mux_t mux) // set multiplexer
+inline void ads1115_set_mux(ads1115_t* ads, ads1115_mux_t mux) // set multiplexer
 {
     mock().actualCall("ads1115_set_mux")
           .withPointerParameter("ads", ads)
           .withIntParameter("mux", (int)mux);
 }
 
-void ads1115_set_pga(ads1115_t* ads, ads1115_fsr_t fsr) // set fsr
+inline void ads1115_set_pga(ads1115_t* ads, ads1115_fsr_t fsr) // set fsr
 {
     mock().actualCall("ads1115_set_pga")
           .withPointerParameter("ads", ads)
           .withIntParameter("fsr", fsr);
 }
 
-void ads1115_set_mode(ads1115_t* ads, ads1115_mode_t mode) // set read mode
+inline void ads1115_set_mode(ads1115_t* ads, ads1115_mode_t mode) // set read mode
 {
     mock().actualCall("ads1115_set_mode")
           .withPointerParameter("ads", ads)
           .withIntParameter("mode", mode);
 }
 
-void ads1115_set_sps(ads1115_t* ads, ads1115_sps_t sps) // set sampling speed
+inline void ads1115_set_sps(ads1115_t* ads, ads1115_sps_t sps) // set sampling speed
 {
     mock().actualCall("ads1115_set_sps")
           .withPointerParameter("ads", ads)
           .withIntParameter("sps", sps);
 }
 
-void ads1115_set_max_ticks(ads1115_t* ads, TickType_t max_ticks) // maximum wait ticks for i2c bus
+inline void ads1115_set_max_ticks(ads1115_t* ads, TickType_t max_ticks) // maximum wait ticks for i2c bus
 {
     mock().actualCall("ads1115_set_max_ticks")
           .withPointerParameter("ads", ads)
           .withUnsignedLongIntParameter("max_ticks", max_ticks);
 }
 
-int16_t ads1115_get_raw(ads1115_t* ads) // get voltage in bits
+inline void ads1115_startConversion(ads1115_t* ads) {
+    mock().actualCall("ads1115_startConversion")
+          .withPointerParameter("ads", ads);
+}
+
+inline int16_t ads1115_get_raw(ads1115_t* ads) // get voltage in bits
 {
     mock().actualCall("ads1115_get_raw")
           .withPointerParameter("ads", ads);
     return mock().returnIntValueOrDefault(0);
 }
 
-double ads1115_get_voltage(ads1115_t* ads) // get voltage in volts
+inline double ads1115_get_voltage(ads1115_t* ads) // get voltage in volts
 {
     mock().actualCall("ads1115_get_voltage")
           .withPointerParameter("ads", ads);
     return mock().returnDoubleValueOrDefault(0);
+}
+
+inline bool ads1115_conversionComplete(ads1115_t* ads)
+{
+    mock().actualCall("ads1115_conversionComplete")
+          .withPointerParameter("ads", ads);
+    return mock().returnBoolValueOrDefault(false);
 }
 
 #endif // ifdef ADS1115_H

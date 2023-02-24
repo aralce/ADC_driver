@@ -1,9 +1,14 @@
 #pragma once
 #include "../../../ADC_driver_config.h"
-#ifdef ESP32_WITH_ESP_IDF
+
+#if defined(ESP32_WITH_ESP_IDF) || defined(IS_RUNNING_TESTS)
 
 #include <ADC_driver_api.h>
-#include "adc_library/ads1115.h"
+#ifdef IS_RUNNING_TESTS
+    #include <mocks/ADC_library/ADC_firmware/ADC_ADS1115_driver/ESP32_with_ESP_IDF/ads1115.h>
+#else
+    #include "adc_library/ads1115.h"
+#endif
 
 #define ADC_CHANNEL_1   ADS1115_MUX_0_GND
 #define ADC_CHANNEL_2   ADS1115_MUX_1_GND
@@ -22,7 +27,8 @@ public:
     float get_measured_voltage() override;
 
 private:
-
+    ads1115_t adc_driver;
+    adc_channel _adc_channel = adc_channel::ADC_DRIVER_CHANNEL_1;
 };
 
 #endif // ESP32_WITH_ESP_IDF
