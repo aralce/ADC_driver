@@ -30,7 +30,7 @@
 
 #include <string.h>
 #include <esp_log.h>
-#include <smbus.h>
+#include "smbus.h"
 
 static const char *TAG = "mcp342x";
 
