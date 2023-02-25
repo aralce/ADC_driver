@@ -44,9 +44,6 @@ OBJECT_FILES_ON_DIR = $(addprefix $(BUILD_OUTPUT_DIR),$(OBJECT_FILES))
 link_objects_of_tests: $(OBJECT_FILES_ON_DIR)
 	@$(CXX) $(CXXFLAGS) $^ $(LD_LIBRARIES) -o $(BUILD_OUTPUT_DIR)tests.out
 
-
-.INTERMEDIATE: $(OBJECT_FILES_ON_DIR)
-
 vpath %.cpp $(TEST_MAIN_FOLDER_DIR)
 vpath %.cpp $(UNDER_TEST_PROGRAM_DIR)
 vpath %.cpp %.h $(ADC_LIBRARY_DIR)

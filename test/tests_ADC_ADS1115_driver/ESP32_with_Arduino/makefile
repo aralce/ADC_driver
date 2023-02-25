@@ -50,8 +50,6 @@ OBJECT_FILES_ON_DIR = $(addprefix $(BUILD_OUTPUT_DIR),$(OBJECT_FILES))
 link_objects_of_tests: $(OBJECT_FILES_ON_DIR)
 	@$(CXX) $(CXXFLAGS) $^ $(LD_LIBRARIES) -o $(BUILD_OUTPUT_DIR)tests.out
 
-.INTERMEDIATE: $(OBJECT_FILES_ON_DIR)
-
 $(BUILD_OUTPUT_DIR)%.o : %.cpp
 	@$(CXX) $(CXXFLAGS) $< $(LD_LIBRARIES) -c -o $@
 

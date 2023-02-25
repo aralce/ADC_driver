@@ -1,13 +1,16 @@
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
-#include <Implementation/ADC_MCP342x_driver/ADC_MCP342x_driver.h>
+#include <Implementation/ADC_MCP342x_driver/ESP32_ESP_IDF/ADC_MCP342x_driver.h>
+#include <mocks/ADC_library/ADC_firmware/ADC_MCP342x_driver/ESP32_with_ESP_IDF/mcp342x.h>
 
 ADC_MCP342x_driver* adc_driver = nullptr;
 
-TEST_GROUP(ADC_MCP342x_driver)
+TEST_GROUP(ADC_MCP342x_driver_ESP_IDF)
 {
+    Mcp342x_config_t_comparator comp;
     void setup()
     {
+        mock().installComparator("mcp342x_config_t", comp);
         mock().disable();
         adc_driver = new ADC_MCP342x_driver();
         mock().enable();
@@ -21,107 +24,99 @@ TEST_GROUP(ADC_MCP342x_driver)
         }
         mock().checkExpectations();
         mock().clear();
+        mock().removeAllComparatorsAndCopiers();
     }
 };
 
-#define SERIAL_PORT_BAUDRATE    115200UL
-#define DEFAULT_ADDRESS 0x69
-TEST(ADC_MCP342x_driver, initialize_ADC_driver_with_no_issues_and_INITIALIZE_SERIAL_PORT_to_communicate_errors)
+#define ADC_ADDRESS 0x69
+mcp342x_config_t default_config = {
+    .channel = MCP342X_CHANNEL_1,
+    .conversion_mode = MCP342X_MODE_ONESHOT,
+    .sample_rate = MCP342X_SRATE_14BIT,
+    .gain = MCP342X_GAIN_1X
+};
+
+TEST(ADC_MCP342x_driver_ESP_IDF, initialize_ADC_driver)
 {
-    mock().expectOneCall("MCP342x->construct(address)")
-          .withUnsignedIntParameter("address", DEFAULT_ADDRESS);
-    ADC_MCP342x_driver adc_driver;
+    mock().expectOneCall("smbus_init")
+          .withIntParameter("i2c_port", 0)
+          .withIntParameter("address", ADC_ADDRESS)
+          .ignoreOtherParameters();
 
-    mock().expectOneCall("Serial->begin")
-          .withUnsignedIntParameter("baudrate", SERIAL_PORT_BAUDRATE)
-          .andReturnValue(true);
-
-    mock().expectOneCall("Wire->begin");
-
-    mock().expectOneCall("MCP342x::generalCallReset");
-    mock().expectOneCall("delay")
-          .withUnsignedIntParameter("ms", 1);
-
-    const uint8_t address_to_check = DEFAULT_ADDRESS;
-    mock().expectOneCall("MCP342x->autoprobe")
-          .withMemoryBufferParameter("addressList", (const unsigned char*)&address_to_check, 1)
-          .withUnsignedIntParameter("len", 1)
-          .andReturnValue(true);
-
-//channel 1;
-//resolution 14_bits
-//one_shot_mode
-//gain 1
-    adc_driver.initialize();
-}
-
-TEST(ADC_MCP342x_driver, if_begin_fails_then_shows_a_message_and_hangs_the_micro_controller)
-{
-    mock().expectOneCall("MCP342x->autoprobe")
-          .ignoreOtherParameters()
-          .andReturnValue(false);
-    
-    mock().expectOneCall("Serial->println")
-          .withStringParameter("msg", "--Sensor_logger-- Failed to initialize external ADC MCP342x. Please, check the I2C connections and restart micro-controller");
-    
-    mock().ignoreOtherCalls();
+    mock().expectOneCall("mcp342x_init")
+          .withParameterOfType("mcp342x_config_t", "in_config", (const void*)&default_config)
+          .ignoreOtherParameters();
 
     adc_driver->initialize();
 }
 
 #define DEFAULT_INPUT_CHANNEL (uint32_t)adc_channel::ADC_DRIVER_CHANNEL_1
-TEST(ADC_MCP342x_driver, default_input_channel_is_ADC_DRIVER_CHANNEL_1)
+TEST(ADC_MCP342x_driver_ESP_IDF, default_input_channel_is_ADC_DRIVER_CHANNEL_1)
 {
     CHECK_EQUAL(DEFAULT_INPUT_CHANNEL, (uint32_t)adc_driver->get_input_channel());
 }
 
-TEST(ADC_MCP342x_driver, set_input_channel)
+TEST(ADC_MCP342x_driver_ESP_IDF, set_input_channel)
 {
+    mock().disable();
+    adc_driver->initialize();
+    mock().enable();
+    
+    mcp342x_config_t config = default_config;
+    config.channel = MCP342X_CHANNEL_2;
+    mock().expectOneCall("mcp342x_set_config")
+          .withParameterOfType("mcp342x_config_t", "in_config", (const void*)&config)
+          .ignoreOtherParameters();
+    
     adc_driver->set_input_channel(adc_channel::ADC_DRIVER_CHANNEL_2);
     CHECK_EQUAL((uint32_t)adc_channel::ADC_DRIVER_CHANNEL_2, (uint32_t)adc_driver->get_input_channel());
+
+    config.channel = MCP342X_CHANNEL_1;
+    mock().expectOneCall("mcp342x_set_config")
+          .withParameterOfType("mcp342x_config_t", "in_config", (const void*)&config)
+          .ignoreOtherParameters();
 
     adc_driver->set_input_channel(adc_channel::ADC_DRIVER_CHANNEL_1);
     CHECK_EQUAL((uint32_t)adc_channel::ADC_DRIVER_CHANNEL_1, (uint32_t)adc_driver->get_input_channel());
 }
 
-TEST(ADC_MCP342x_driver, is_conversion_complete)
+TEST(ADC_MCP342x_driver_ESP_IDF, is_conversion_complete)
 {
-    mock().expectOneCall("MCP342x->read")
-          .ignoreOtherParameters();
-    mock().expectOneCall("MCP342x::Config->isReady")
-          .andReturnValue(true);
+    mock().disable();
+    adc_driver->initialize();
+    mock().enable();
 
-    CHECK_TRUE(adc_driver->is_conversion_complete());
-    mock().checkExpectations();
-    mock().clear();
-
-    mock().expectOneCall("MCP342x->read")
-          .ignoreOtherParameters();
-    mock().expectOneCall("MCP342x::Config->isReady")
+    mock().expectOneCall("is_mcp342x_conversion_complete")
+          .ignoreOtherParameters()
           .andReturnValue(false);
-
     CHECK_FALSE(adc_driver->is_conversion_complete());
+
+    mock().expectOneCall("is_mcp342x_conversion_complete")
+          .ignoreOtherParameters()
+          .andReturnValue(true);
+    CHECK_TRUE(adc_driver->is_conversion_complete());
 }
 
-#define LEAST_SIGNIFICANT_BIT_VALUE_ON_14_BIT_RESOLUTION 250e-6
-TEST(ADC_MCP342x_driver, get_measured_voltage)
+TEST(ADC_MCP342x_driver_ESP_IDF, get_measured_voltage)
 {
-    long READ_VALUE = 75;
-    mock().expectOneCall("MCP342x->read")
-          .withOutputParameterReturning("result", (void*)&READ_VALUE, sizeof(READ_VALUE))
+    mock().disable();
+    adc_driver->initialize();
+    mock().enable();
+    
+    double EXPECTED_VOLTAGE = 2.5;
+    mock().expectOneCall("mcp342x_read_voltage")
+          .withOutputParameterReturning("result", (const void*)&EXPECTED_VOLTAGE, sizeof(EXPECTED_VOLTAGE))
           .ignoreOtherParameters();
-    
-    float expected_voltage = READ_VALUE*LEAST_SIGNIFICANT_BIT_VALUE_ON_14_BIT_RESOLUTION;
-    DOUBLES_EQUAL(expected_voltage, adc_driver->get_measured_voltage(), 0.00001f);
+    DOUBLES_EQUAL(EXPECTED_VOLTAGE, adc_driver->get_measured_voltage(), 0.00001f);
 }
 
-TEST(ADC_MCP342x_driver, start_new_single_reading)
+TEST(ADC_MCP342x_driver_ESP_IDF, start_new_single_reading)
 {
-    mock().expectOneCall("MCP342x->convert")
-          .withMemoryBufferParameter("channel", (const unsigned char*)&MCP342x::channel1, sizeof(MCP342x::Channel))
-          .withMemoryBufferParameter("mode", (const unsigned char*)&MCP342x::oneShot, sizeof(MCP342x::Mode))
-          .withMemoryBufferParameter("resolution", (const unsigned char*)&MCP342x::resolution14, sizeof(MCP342x::Resolution))
-          .withMemoryBufferParameter("gain", (const unsigned char*)&MCP342x::gain1, sizeof(MCP342x::Gain));
-    
+    mock().disable();
+    adc_driver->initialize();
+    mock().enable();
+
+    mock().expectOneCall("mcp342x_start_new_conversion")
+          .ignoreOtherParameters();
     adc_driver->start_new_single_reading();
 }

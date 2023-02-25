@@ -1,4 +1,6 @@
 #include "ADC_MCP342x_driver.h"
+
+#if defined(ESP_WITH_ARDUINO) || defined(IS_RUNNING_TESTS)
 #include <Arduino.h>
 #include <Wire.h>
 
@@ -51,3 +53,5 @@ float ADC_MCP342x_driver::get_measured_voltage() {
     adc_driver.read(reading_result, reading_status);
     return reading_result*LEAST_SIGNIFICANT_BIT_VALUE_ON_14_BIT_RESOLUTION;
 }
+
+#endif // ESP32_WITH_ARDUINO
