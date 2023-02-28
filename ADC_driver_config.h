@@ -4,7 +4,7 @@
  * 
  * Micro-controller and Framework:
  * ------------------------------
- * Leave uncomment the option that fits your need.
+ * Leave uncommented the option that fits your need.
  * In the case of more than one option uncommented, the used option will be the upper one
  * 
  * **/

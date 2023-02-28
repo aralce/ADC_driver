@@ -74,17 +74,24 @@ ads1115_t ads1115_config(i2c_port_t i2c_port, uint8_t address) {
   ads.changed = 1; // say we changed the configuration
   ads.max_ticks = 10/portTICK_PERIOD_MS;
 
-  i2c_config_t i2c_config = {
-    .mode = I2C_MODE_MASTER,
-    .sda_io_num = GPIO_NUM_21,
-    .sda_pullup_en = GPIO_PULLUP_ENABLE,
-    .scl_io_num = GPIO_NUM_22,
-    .scl_pullup_en = GPIO_PULLUP_ENABLE,
-    .master.clk_speed = 100000L,
-    .clk_flags = 0,
-  };
-  i2c_param_config(i2c_port, &i2c_config);
-  i2c_driver_install(i2c_port, I2C_MODE_MASTER, 0, 0, 0);
+  //TODO: this code is just to work with the project smart battery. A more general solution would be
+  //implemented in the future if it is desirable to have more control over the configuration
+  static bool is_i2c_init[I2C_NUM_MAX] = {};
+  if (is_i2c_init[i2c_port] == false) {
+    i2c_config_t i2c_config = {
+      .mode = I2C_MODE_MASTER,
+      .sda_io_num = GPIO_NUM_21,
+      .sda_pullup_en = GPIO_PULLUP_ENABLE,
+      .scl_io_num = GPIO_NUM_22,
+      .scl_pullup_en = GPIO_PULLUP_ENABLE,
+      .master.clk_speed = 100000L,
+      .clk_flags = 0,
+    };
+  
+    i2c_param_config(i2c_port, &i2c_config);
+    i2c_driver_install(i2c_port, I2C_MODE_MASTER, 0, 0, 0);
+    is_i2c_init[i2c_port] = true;
+  }
   return ads; // return the completed configuration
 }
 

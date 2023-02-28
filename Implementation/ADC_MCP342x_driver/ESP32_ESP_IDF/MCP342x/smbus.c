@@ -206,7 +206,11 @@ esp_err_t smbus_init(smbus_info_t * smbus_info, i2c_port_t i2c_port, i2c_address
         smbus_info->timeout = SMBUS_DEFAULT_TIMEOUT;
         smbus_info->init = true;
 
-        i2c_config_t i2c_config = {
+        //TODO: this code is just to work with the project smart battery. A more general solution would be
+        //implemented in the future if it is desirable to have more control over the configuration
+        static bool is_i2c_init[I2C_NUM_MAX] = {};
+        if (is_i2c_init[i2c_port] == false) {
+          i2c_config_t i2c_config = {
             .mode = I2C_MODE_MASTER,
             .sda_io_num = GPIO_NUM_21,
             .sda_pullup_en = GPIO_PULLUP_ENABLE,
@@ -214,9 +218,12 @@ esp_err_t smbus_init(smbus_info_t * smbus_info, i2c_port_t i2c_port, i2c_address
             .scl_pullup_en = GPIO_PULLUP_ENABLE,
             .master.clk_speed = 100000L,
             .clk_flags = 0,
-        };
-        i2c_param_config(i2c_port, &i2c_config);
-        i2c_driver_install(i2c_port, I2C_MODE_MASTER, 0, 0, 0);
+          };
+        
+          i2c_param_config(i2c_port, &i2c_config);
+          i2c_driver_install(i2c_port, I2C_MODE_MASTER, 0, 0, 0);
+          is_i2c_init[i2c_port] = true;
+        }
     }
     else
     {

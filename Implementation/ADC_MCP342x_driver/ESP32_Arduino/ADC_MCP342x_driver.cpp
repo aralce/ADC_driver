@@ -1,6 +1,6 @@
 #include "ADC_MCP342x_driver.h"
 
-#if defined(ESP_WITH_ARDUINO) || defined(IS_RUNNING_TESTS)
+#if defined(ESP32_WITH_ARDUINO) || defined(IS_RUNNING_TESTS)
 #include <Arduino.h>
 #include <Wire.h>
 
