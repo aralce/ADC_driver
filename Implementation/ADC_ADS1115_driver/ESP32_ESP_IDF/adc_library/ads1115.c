@@ -6,11 +6,11 @@
 #include "driver/i2c.h"
 #include "esp_log.h"
 
-static void IRAM_ATTR gpio_isr_handler(void* arg) {
-  const bool ret = 1; // dummy value to pass to queue
-  xQueueHandle gpio_evt_queue = (xQueueHandle) arg; // find which queue to write
-  xQueueSendFromISR(gpio_evt_queue, &ret, NULL);
-}
+// static void IRAM_ATTR gpio_isr_handler(void* arg) {
+//   const bool ret = 1; // dummy value to pass to queue
+//   xQueueHandle gpio_evt_queue = (xQueueHandle) arg; // find which queue to write
+//   xQueueSendFromISR(gpio_evt_queue, &ret, NULL);
+// }
 
 static esp_err_t ads1115_write_register(ads1115_t* ads, ads1115_register_addresses_t reg, uint16_t data) {
   i2c_cmd_handle_t cmd;
@@ -162,5 +162,5 @@ bool ads1115_conversionComplete(ads1115_t* ads) {
     return false;
   }
 
-  return data[1] & READ_STATUS_MASK_ON_CONFIG_REGISTER_2nd_BYTE != 0;
+  return (data[1] & READ_STATUS_MASK_ON_CONFIG_REGISTER_2nd_BYTE) != 0;
 }

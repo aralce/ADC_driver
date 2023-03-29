@@ -1,3 +1,5 @@
+#if defined(ESP32_WITH_ARDUINO) 
+
 #include "Adafruit_I2CDevice.h"
 
 //#define DEBUG_SERIAL Serial
@@ -311,3 +313,6 @@ bool Adafruit_I2CDevice::setSpeed(uint32_t desiredclk) {
   return false;
 #endif
 }
+
+
+#endif //ESP32_WITH_ARDUINO

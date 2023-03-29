@@ -1,3 +1,5 @@
+#if defined(ESP32_WITH_ARDUINO) 
+
 #ifndef Adafruit_I2CDevice_h
 #define Adafruit_I2CDevice_h
 
@@ -34,3 +36,5 @@ private:
 };
 
 #endif // Adafruit_I2CDevice_h
+
+#endif //ESP32_WITH_ARDUINO

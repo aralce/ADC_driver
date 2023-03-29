@@ -1,3 +1,5 @@
+#if defined(ESP32_WITH_ARDUINO) 
+
 #include "Adafruit_SPIDevice.h"
 
 //#define DEBUG_SERIAL Serial
@@ -506,3 +508,5 @@ bool Adafruit_SPIDevice::write_and_read(uint8_t *buffer, size_t len) {
 
   return true;
 }
+
+#endif //ESP32_WITH_ARDUINO

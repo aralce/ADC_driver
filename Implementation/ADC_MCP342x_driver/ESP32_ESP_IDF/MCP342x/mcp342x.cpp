@@ -236,5 +236,5 @@ bool is_mcp342x_conversion_complete(const mcp342x_info_t *mcp342x_info_ptr) {
     smbus_i2c_read_block(mcp342x_info_ptr->smbus_info, mcp342x_info_ptr->config, buffer, 5);
     ESP_LOGV(TAG, "%02x %02x %02x %02x", buffer[0], buffer[1], buffer[2], buffer[3]);
     
-    return buffer[3] & MCP342X_CNTRL_MASK == MCP342X_CNTRL_RESULT_UPDATED;
+    return (buffer[3] & MCP342X_CNTRL_MASK) == MCP342X_CNTRL_RESULT_UPDATED;
 }

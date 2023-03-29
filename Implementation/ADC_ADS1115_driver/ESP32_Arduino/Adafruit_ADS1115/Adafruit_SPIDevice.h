@@ -1,3 +1,5 @@
+#if defined(ESP32_WITH_ARDUINO) 
+
 #ifndef Adafruit_SPIDevice_h
 #define Adafruit_SPIDevice_h
 
@@ -136,3 +138,5 @@ private:
 };
 
 #endif // Adafruit_SPIDevice_h
+
+#endif //ESP32_WITH_ARDUINO

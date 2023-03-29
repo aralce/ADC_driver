@@ -1,3 +1,6 @@
+#include "../../../../ADC_driver_config.h"
+#if defined(ESP32_WITH_ARDUINO)
+
 #ifndef MCP342X_h
 #define MCP342X_h
 
@@ -239,3 +242,5 @@ private:
 
 
 #endif
+
+#endif //ESP32_WITH_ARDUINO

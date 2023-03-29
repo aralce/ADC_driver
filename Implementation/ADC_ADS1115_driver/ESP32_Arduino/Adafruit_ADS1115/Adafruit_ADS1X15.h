@@ -1,3 +1,4 @@
+#if defined(ESP32_WITH_ARDUINO)
 /**************************************************************************/
 /*!
     @file     Adafruit_ADS1X15.h
@@ -199,3 +200,5 @@ public:
 };
 
 #endif
+
+#endif //ESP32_WITH_ARDUINO

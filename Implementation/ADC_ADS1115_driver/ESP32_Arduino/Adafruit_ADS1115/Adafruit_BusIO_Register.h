@@ -1,3 +1,5 @@
+#if defined(ESP32_WITH_ARDUINO)
+
 #ifndef Adafruit_BusIO_Register_h
 #define Adafruit_BusIO_Register_h
 
@@ -103,3 +105,6 @@ private:
 
 #endif // SPI exists
 #endif // BusIO_Register_h
+
+
+#endif //#ESP32_WITH_ARDUINO

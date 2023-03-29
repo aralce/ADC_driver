@@ -1,3 +1,5 @@
+#if defined(ESP32_WITH_ARDUINO)
+
 #include <Wire.h>
 #include <Arduino.h>
 #include "MCP342x.h"
@@ -231,3 +233,5 @@ unsigned long MCP342x::Config::getConversionTime(void) const
   // return 0; // Shouldn't happen
 }
 
+
+#endif //ESP32_WITH_ARDUINO

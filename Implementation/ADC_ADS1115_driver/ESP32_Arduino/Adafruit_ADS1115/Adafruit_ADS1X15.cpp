@@ -1,3 +1,4 @@
+#if defined(ESP32_WITH_ARDUINO)
 /**************************************************************************/
 /*!
     @file     Adafruit_ADS1X15.cpp
@@ -401,3 +402,6 @@ uint16_t Adafruit_ADS1X15::readRegister(uint8_t reg) {
   m_i2c_dev->read(buffer, 2);
   return ((buffer[0] << 8) | buffer[1]);
 }
+
+
+#endif //ESP32_WITH_ARDUINO
