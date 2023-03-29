@@ -230,7 +230,6 @@ mcp342x_conversion_status_t mcp342x_read_voltage(const mcp342x_info_t *mcp342x_i
 }
 
 bool is_mcp342x_conversion_complete(const mcp342x_info_t *mcp342x_info_ptr) {
-    int32_t i32;
     uint8_t buffer[5] = {};
 
     smbus_i2c_read_block(mcp342x_info_ptr->smbus_info, mcp342x_info_ptr->config, buffer, 5);
