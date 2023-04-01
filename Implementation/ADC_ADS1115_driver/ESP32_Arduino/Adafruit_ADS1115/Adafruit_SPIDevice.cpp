@@ -1,6 +1,6 @@
+#include "Adafruit_SPIDevice.h"
 #if defined(ESP32_WITH_ARDUINO) 
 
-#include "Adafruit_SPIDevice.h"
 
 //#define DEBUG_SERIAL Serial
 

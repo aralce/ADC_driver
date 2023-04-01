@@ -1,8 +1,8 @@
+#include "MCP342x.h"
 #if defined(ESP32_WITH_ARDUINO)
 
 #include <Wire.h>
 #include <Arduino.h>
-#include "MCP342x.h"
 
 // Assuming a 100kHz clock the address and config byte take 18 clock
 // cycles, or 180 microseconds. Use a timeout of 250us to be safe.

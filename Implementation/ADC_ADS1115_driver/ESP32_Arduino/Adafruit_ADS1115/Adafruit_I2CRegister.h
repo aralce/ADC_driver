@@ -1,3 +1,4 @@
+#include "../../../../ADC_driver_config.h"
 #if defined(ESP32_WITH_ARDUINO) 
 
 #ifndef _ADAFRUIT_I2C_REGISTER_H_

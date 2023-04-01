@@ -1,3 +1,4 @@
+#include "../../../../ADC_driver_config.h"
 #if defined(ESP32_WITH_ARDUINO) 
 
 #ifndef Adafruit_I2CDevice_h

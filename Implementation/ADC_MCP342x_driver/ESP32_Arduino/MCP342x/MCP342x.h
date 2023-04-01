@@ -4,6 +4,8 @@
 #ifndef MCP342X_h
 #define MCP342X_h
 
+#include <stdint.h>
+
 #define MCP342X_VERSION "1.0.4"
 
 class MCP342x {

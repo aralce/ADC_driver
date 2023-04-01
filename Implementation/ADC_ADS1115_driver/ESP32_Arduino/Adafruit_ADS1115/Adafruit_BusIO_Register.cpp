@@ -1,6 +1,6 @@
+#include "Adafruit_BusIO_Register.h"
 #if defined(ESP32_WITH_ARDUINO) 
 
-#include "Adafruit_BusIO_Register.h"
 
 #if !defined(SPI_INTERFACES_COUNT) ||                                          \
     (defined(SPI_INTERFACES_COUNT) && (SPI_INTERFACES_COUNT > 0))
