@@ -44,7 +44,9 @@ void ADC_MCP342x_driver::set_input_channel(adc_channel channel) {
 }
 
 bool ADC_MCP342x_driver::is_conversion_complete() {
-    adc_driver.read(reading_result, reading_status);
+    error_t err = adc_driver.read(reading_result, reading_status);
+    if (err != errorNone)
+        return false;
     return reading_status.isReady();
 }
 

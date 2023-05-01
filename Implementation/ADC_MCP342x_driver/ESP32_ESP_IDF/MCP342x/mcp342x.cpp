@@ -232,7 +232,11 @@ mcp342x_conversion_status_t mcp342x_read_voltage(const mcp342x_info_t *mcp342x_i
 bool is_mcp342x_conversion_complete(const mcp342x_info_t *mcp342x_info_ptr) {
     uint8_t buffer[5] = {};
 
-    smbus_i2c_read_block(mcp342x_info_ptr->smbus_info, mcp342x_info_ptr->config, buffer, 5);
+    esp_err_t err = smbus_i2c_read_block(mcp342x_info_ptr->smbus_info, mcp342x_info_ptr->config, buffer, 5);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Error in is_mcp342x_conversion_complete: %s\r\n", esp_err_to_name(err));
+        return false;
+    }
     ESP_LOGV(TAG, "%02x %02x %02x %02x", buffer[0], buffer[1], buffer[2], buffer[3]);
     
     return (buffer[3] & MCP342X_CNTRL_MASK) == MCP342X_CNTRL_RESULT_UPDATED;
