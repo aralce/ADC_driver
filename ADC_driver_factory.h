@@ -1,7 +1,7 @@
 #pragma once
 #include <ADC_driver_api.h>
 
-enum class adc_model{ADC_ADS1115_driver, ADC_MCP342x_driver};
+enum class adc_model{ADC_STUB, ADC_ADS1115_driver, ADC_MCP342x_driver};
 #define ADC_DEFAULT_MODEL   adc_model::ADC_MCP342x_driver
 
 class ADC_driver_factory {
@@ -15,3 +15,6 @@ public:
     ADC_driver_factory& operator=(const ADC_driver_factory&) = delete;
     ADC_driver_factory& operator=(ADC_driver_factory&&) = delete;
 };
+
+
+void set_adc_stub_measured_voltage(float value);

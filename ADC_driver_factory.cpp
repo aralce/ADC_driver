@@ -13,7 +13,14 @@ ADC_driver_api* ADC_driver_factory::get_new_adc_driver_instance(adc_model instan
         case adc_model::ADC_MCP342x_driver:
             return new ADC_MCP342x_driver;
 
+        case adc_model::ADC_STUB:
+            return new ADC_stub;
+            
         default:
             return new ADC_ADS1115_driver;
     }
+}
+
+void set_adc_stub_measured_voltage(float value) {
+    measured_voltage = value;
 }
