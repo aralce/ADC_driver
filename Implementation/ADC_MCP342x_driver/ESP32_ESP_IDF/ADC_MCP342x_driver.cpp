@@ -1,29 +1,25 @@
 #include "ADC_MCP342x_driver.h"
 
+#include <esp_log.h>
+
 #if defined(ESP32_WITH_ESP_IDF) || defined(IS_RUNNING_TESTS)
 
 #define ADC_I2C_PORT 0
 const uint8_t default_address = 0x69;
 
 void ADC_MCP342x_driver::initialize() {
-    esp_err_t error = smbus_init(&smbus_info, ADC_I2C_PORT, default_address);
-    if (error != ESP_OK)
-        printf("ERROR: FAILED TO INITIALIZE SMBUS_INFO -- %s\r\n", esp_err_to_name(error));
+    smbus_init(&smbus_info, ADC_I2C_PORT, default_address);
 
     mcp342x_config.channel = MCP342X_CHANNEL_1;
     mcp342x_config.conversion_mode = MCP342X_MODE_ONESHOT;
     mcp342x_config.sample_rate = MCP342X_SRATE_14BIT;
     mcp342x_config.gain = MCP342X_GAIN_1X;
     
-    error = mcp342x_init(&mcp342x_info, &smbus_info, mcp342x_config);
-    if (error != ESP_OK)
-        printf("ERROR: FAILED TO INITIALIZE MCP342x -- %s\r\n", esp_err_to_name(error));
+    mcp342x_init(&mcp342x_info, &smbus_info, mcp342x_config);
 }
 
 void ADC_MCP342x_driver::start_new_single_reading() {
-    esp_err_t error = mcp342x_start_new_conversion(&mcp342x_info);
-    if (error != ESP_OK)
-        printf("ERROR:  FAILED TO START NEW CONVERSION -- %s", esp_err_to_name(error));
+    mcp342x_start_new_conversion(&mcp342x_info);
 }
 
 adc_channel ADC_MCP342x_driver::get_input_channel() const {
