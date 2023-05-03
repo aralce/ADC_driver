@@ -109,3 +109,21 @@ TEST(ADC_ADS1115_driver_esp32_arduino, start_new_single_reading_when_channel_is_
     
     adc_driver->start_new_single_reading();
 }
+
+TEST(ADC_ADS1115_driver_esp32_arduino, set_samples_per_second)
+{
+    mock().expectOneCall("Adafruit_ADS1115->setDataRate")
+          .withUnsignedIntParameter("rate", RATE_ADS1115_860SPS);
+    adc_driver->set_samples_per_second(860);
+}
+
+TEST(ADC_ADS1115_driver_esp32_arduino, GIVEN_set_samples_per_second_WHEN_RATE_set_is_invalid_THEN_shows_a_message_and_rate_is_not_set)
+{
+    mock().expectOneCall("Serial->println")
+          .withStringParameter("msg", "Error -- ADC ads1115 samples per second to set is invalid. Please use a valid rate");
+    adc_driver->set_samples_per_second(1);
+
+    mock().expectOneCall("Serial->println")
+          .ignoreOtherParameters();
+    adc_driver->set_samples_per_second(859);
+}

@@ -145,7 +145,7 @@ inline int mcp342x_init(mcp342x_info_t *mcp342x_info, smbus_info_t *smbus_info, 
           .withPointerParameter("mcp342x_info", (void*)mcp342x_info)
           .withPointerParameter("smbus_info", smbus_info)
           .withParameterOfType("mcp342x_config_t", "in_config", (const void*)&in_config);
-    return 0;
+    return mock().returnIntValueOrDefault(0);
 }
 
 inline void mcp342x_set_config(mcp342x_info_t *mcp342x_info_ptr, mcp342x_config_t in_config) {

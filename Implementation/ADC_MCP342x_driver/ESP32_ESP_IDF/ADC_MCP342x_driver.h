@@ -23,6 +23,8 @@ public:
     
     float get_measured_voltage() override;
 
+    void set_samples_per_second(uint16_t rate) override;
+
 private:
     smbus_info_t smbus_info = {};
     mcp342x_info_t mcp342x_info;

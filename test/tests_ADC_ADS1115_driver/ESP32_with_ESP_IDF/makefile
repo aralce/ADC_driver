@@ -4,12 +4,12 @@ TEST_MAIN_FOLDER_DIR = ./
 MAIN_TEST_FOLDER_DIR = ../../
 MAIN_PROGRAM_DIR = $(MAIN_TEST_FOLDER_DIR)../
 UNDER_TEST_PROGRAM_DIR = $(MAIN_PROGRAM_DIR)Implementation/ADC_ADS1115_driver/ESP32_ESP_IDF/
-ADC_LIBRARY_DIR = $(MAIN_TEST_FOLDER_DIR)mocks/ADC_library/ADC_firmware/ADC_ADS1115_driver/ESP32_with_Arduino/
+ESP_LOG_MOCK_DIR = $(MAIN_TEST_FOLDER_DIR)mocks/ESP_IDF/
 
 CPPUTEST_HOME = ../../cpputest/
 
 COMPILER_INCLUDE_FLAGS  = -I$(CPPUTEST_HOME)include
-COMPILER_INCLUDE_FLAGS += -I$(ADC_LIBRARY_DIR)
+COMPILER_INCLUDE_FLAGS += -I$(ESP_LOG_MOCK_DIR)
 COMPILER_INCLUDE_FLAGS += -I$(MAIN_PROGRAM_DIR)
 COMPILER_INCLUDE_FLAGS += -I$(MAIN_TEST_FOLDER_DIR)
 
@@ -38,7 +38,6 @@ create_build_folder:
 OBJECT_FILES  = $(patsubst %.cpp, %.o, $(notdir $(wildcard $(TEST_MAIN_FOLDER_DIR)*.cpp)))
 OBJECT_FILES += $(patsubst %.cpp, %.o, $(notdir $(wildcard $(UNDER_TEST_PROGRAM_DIR)*.cpp)))
 OBJECT_FILES += $(patsubst %.cpp, %.o, $(notdir $(wildcard $(ARDUINO_MOCK_DIR)*.cpp)))
-OBJECT_FILES += $(patsubst %.cpp, %.o, $(notdir $(wildcard $(ADC_LIBRARY_DIR)*.cpp)))
 OBJECT_FILES_ON_DIR = $(addprefix $(BUILD_OUTPUT_DIR),$(OBJECT_FILES))
 
 link_objects_of_tests: $(OBJECT_FILES_ON_DIR)
@@ -46,7 +45,6 @@ link_objects_of_tests: $(OBJECT_FILES_ON_DIR)
 
 vpath %.cpp $(TEST_MAIN_FOLDER_DIR)
 vpath %.cpp $(UNDER_TEST_PROGRAM_DIR)
-vpath %.cpp %.h $(ADC_LIBRARY_DIR)
 
 $(BUILD_OUTPUT_DIR)%.o : %.cpp
 	@$(CXX) $(CXXFLAGS) $< $(LD_LIBRARIES) -c -o $@

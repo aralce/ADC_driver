@@ -1,4 +1,6 @@
 #pragma once
+#include "CppUTest/TestHarness.h"
+#include "CppUTestExt/MockSupport.h"
 
 typedef int esp_err_t;
 
@@ -24,3 +26,11 @@ typedef int esp_err_t;
 #define ESP_ERR_MESH_BASE           0x4000  /*!< Starting number of MESH error codes */
 #define ESP_ERR_FLASH_BASE          0x6000  /*!< Starting number of flash error codes */
 #define ESP_ERR_HW_CRYPTO_BASE      0xc000  /*!< Starting number of HW cryptography module error codes */
+
+#define ESP_LOGE(tag, message) error_log(tag, message)
+
+inline void error_log(char* tag, const char* message) {
+    mock().actualCall("ESP_LOGE")
+          .withStringParameter("tag", tag)
+          .withStringParameter("message", message);
+}

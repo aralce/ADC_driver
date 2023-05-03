@@ -17,6 +17,8 @@ public:
     
     float get_measured_voltage() override {return measured_voltage;}
 
+    void set_samples_per_second(uint16_t rate) override {}
+
 private:
     adc_channel _channel = adc_channel::ADC_DRIVER_CHANNEL_1;
 };

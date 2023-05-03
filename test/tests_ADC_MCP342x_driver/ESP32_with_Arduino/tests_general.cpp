@@ -1,15 +1,16 @@
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
-#include <Implementation/ADC_MCP342x_driver/ESP32_Arduino/ADC_MCP342x_driver.h>
+#include "support/spied_ADC_MCP342_driver.h"
+// #include <Implementation/ADC_MCP342x_driver/ESP32_Arduino/ADC_MCP342x_driver.h>
 
-ADC_MCP342x_driver* adc_driver = nullptr;
+Spied_ADC_MCP342_driver* adc_driver = nullptr;
 
 TEST_GROUP(ADC_MCP342x_driver)
 {
     void setup()
     {
         mock().disable();
-        adc_driver = new ADC_MCP342x_driver();
+        adc_driver = new Spied_ADC_MCP342_driver();
         mock().enable();
     }
     void teardown()
@@ -124,4 +125,37 @@ TEST(ADC_MCP342x_driver, start_new_single_reading)
           .withMemoryBufferParameter("gain", (const unsigned char*)&MCP342x::gain1, sizeof(MCP342x::Gain));
     
     adc_driver->start_new_single_reading();
+}
+
+TEST(ADC_MCP342x_driver, set_samples_per_second)
+{
+    adc_driver->set_samples_per_second(240);
+    CHECK_EQUAL(12, adc_driver->spy_resolution());
+
+    adc_driver->set_samples_per_second(60);
+    CHECK_EQUAL(14, adc_driver->spy_resolution());
+
+    adc_driver->set_samples_per_second(15);
+    CHECK_EQUAL(16, adc_driver->spy_resolution());
+}
+
+TEST(ADC_MCP342x_driver, GIVEN_set_samples_per_second_WHEN_start_conversion_use_the_resolution_set)
+{
+    adc_driver->set_samples_per_second(240);
+
+    mock().expectOneCall("MCP342x->convert")
+          .withMemoryBufferParameter("channel", (const unsigned char*)&MCP342x::channel1, sizeof(MCP342x::Channel))
+          .withMemoryBufferParameter("mode", (const unsigned char*)&MCP342x::oneShot, sizeof(MCP342x::Mode))
+          .withMemoryBufferParameter("resolution", (const unsigned char*)&MCP342x::resolution12, sizeof(MCP342x::Resolution))
+          .withMemoryBufferParameter("gain", (const unsigned char*)&MCP342x::gain1, sizeof(MCP342x::Gain));
+    
+    adc_driver->start_new_single_reading();
+}
+
+TEST(ADC_MCP342x_driver, GIVEN_set_samples_per_second_WHEN_resolution_is_invalid_THEN_print_a_message_and_do_not_set_sps)
+{
+    mock().expectOneCall("Serial->println")
+          .withStringParameter("msg", "Error --ADC MCP342x arduino: Invalid Samples per second to set. The operation will do not take place. Please, use a valid value.");
+
+    adc_driver->set_samples_per_second(239);
 }

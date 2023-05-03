@@ -25,6 +25,8 @@ public:
     
     float get_measured_voltage() override;
 
+    void set_samples_per_second(uint16_t rate) override;
+
 private:
     Adafruit_ADS1115 adc_driver;
     adc_channel input_channel = adc_channel::ADC_DRIVER_CHANNEL_1;

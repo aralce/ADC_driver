@@ -3,6 +3,8 @@
 #include <Implementation/ADC_MCP342x_driver/ESP32_ESP_IDF/ADC_MCP342x_driver.h>
 #include <mocks/ADC_library/ADC_firmware/ADC_MCP342x_driver/ESP32_with_ESP_IDF/mcp342x.h>
 
+#include <esp_log.h>
+
 ADC_MCP342x_driver* adc_driver = nullptr;
 
 TEST_GROUP(ADC_MCP342x_driver_ESP_IDF)
@@ -36,18 +38,42 @@ mcp342x_config_t default_config = {
     .gain = MCP342X_GAIN_1X
 };
 
+static void CHECK_adc_driver_initialization_functions_are_called(int smbus_return_value, int mcp342x_init_return_value);
+
 TEST(ADC_MCP342x_driver_ESP_IDF, initialize_ADC_driver)
+{
+    CHECK_adc_driver_initialization_functions_are_called(ESP_OK, ESP_OK);
+    adc_driver->initialize();
+}
+
+TEST(ADC_MCP342x_driver_ESP_IDF, GIVEN_initialize_ADC_driver_WHEN_init_has_issues_THEN_reinit_driver_and_log_message)
+{
+    mock().expectNCalls(2, "ESP_LOGE")
+          .withStringParameter("tag", "ADC_MCP342x_driver_ESP_IDF")
+          .withStringParameter("message", "error_on_initialization");
+    
+    CHECK_adc_driver_initialization_functions_are_called(ESP_FAIL, ESP_OK);
+    CHECK_adc_driver_initialization_functions_are_called(ESP_OK, ESP_FAIL);
+    CHECK_adc_driver_initialization_functions_are_called(ESP_OK, ESP_OK);
+
+    adc_driver->initialize();
+}
+
+static void CHECK_adc_driver_initialization_functions_are_called(int smbus_return_value, int mcp342x_init_return_value)
 {
     mock().expectOneCall("smbus_init")
           .withIntParameter("i2c_port", 0)
           .withIntParameter("address", ADC_ADDRESS)
-          .ignoreOtherParameters();
+          .ignoreOtherParameters()
+          .andReturnValue(smbus_return_value);
+
+    mock().expectOneCall("vTaskDelay")
+          .withUnsignedIntParameter("ticks", 1);
 
     mock().expectOneCall("mcp342x_init")
           .withParameterOfType("mcp342x_config_t", "in_config", (const void*)&default_config)
-          .ignoreOtherParameters();
-
-    adc_driver->initialize();
+          .ignoreOtherParameters()
+          .andReturnValue(mcp342x_init_return_value);
 }
 
 #define DEFAULT_INPUT_CHANNEL (uint32_t)adc_channel::ADC_DRIVER_CHANNEL_1
@@ -119,4 +145,40 @@ TEST(ADC_MCP342x_driver_ESP_IDF, start_new_single_reading)
     mock().expectOneCall("mcp342x_start_new_conversion")
           .ignoreOtherParameters();
     adc_driver->start_new_single_reading();
+}
+
+static void CHECK_mcp342x_set_config(mcp342x_config_t* config);
+
+TEST(ADC_MCP342x_driver_ESP_IDF, set_samples_per_second)
+{
+    mcp342x_config_t config = default_config;
+
+    config.sample_rate = MCP342X_SRATE_12BIT;
+    CHECK_mcp342x_set_config(&config);
+    adc_driver->set_samples_per_second(240);
+
+    config.sample_rate = MCP342X_SRATE_14BIT;
+    CHECK_mcp342x_set_config(&config);
+    adc_driver->set_samples_per_second(60);
+
+    config.sample_rate = MCP342X_SRATE_16BIT;
+    CHECK_mcp342x_set_config(&config);
+    adc_driver->set_samples_per_second(15);
+}
+
+TEST(ADC_MCP342x_driver_ESP_IDF, GIVEN_set_samples_per_second_WHEN_value_to_set_is_invalid_THEN_log_a_message_and_does_not_set_value)
+{
+    mock().expectNoCall("mcp342x_set_config");
+
+    mock().expectOneCall("ESP_LOGE")
+          .withStringParameter("tag", "ADC MCP342x esp-idf")
+          .withStringParameter("message", "Error -- samples per second to set is invalid and won't take effect. Please use a valid value.");
+    adc_driver->set_samples_per_second(14);
+}
+
+static void CHECK_mcp342x_set_config(mcp342x_config_t* config)
+{
+    mock().expectOneCall("mcp342x_set_config")
+          .withParameterOfType("mcp342x_config_t", "in_config", (const void*)config)
+          .ignoreOtherParameters();
 }

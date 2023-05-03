@@ -84,7 +84,8 @@ typedef enum { // samples per second
   ADS1115_SPS_128,
   ADS1115_SPS_250,
   ADS1115_SPS_475,
-  ADS1115_SPS_860
+  ADS1115_SPS_860,
+  ADS1115_MAX_SPS
 } ads1115_sps_t;
 
 typedef enum {

@@ -1,4 +1,5 @@
 #include <Implementation/ADC_ADS1115_driver/ESP32_ESP_IDF/ADC_ADS1115_driver.h>
+#include <esp_log.h>
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
 
@@ -98,4 +99,20 @@ TEST(ADC_ADS1115_driver_esp32_esp_idf, start_new_single_reading_when_channel_is_
           .ignoreOtherParameters();
     
     adc_driver->start_new_single_reading();
+}
+
+TEST(ADC_ADS1115_driver_esp32_esp_idf, set_samples_per_second)
+{
+    mock().expectOneCall("ads1115_set_sps")
+          .withUnsignedIntParameter("sps", ADS1115_SPS_860)
+          .ignoreOtherParameters();
+    adc_driver->set_samples_per_second(860);
+}
+
+TEST(ADC_ADS1115_driver_esp32_esp_idf, GIVEN_set_samples_per_second_WHEN_value_is_invalid_THEN_print_a_message_and_do_not_set_sps)
+{
+    mock().expectOneCall("ESP_LOGE")
+          .withStringParameter("tag", "ADS1115 esp-idf")
+          .withStringParameter("message", "The value to set samples per second is invalid.");
+    adc_driver->set_samples_per_second(859);
 }
