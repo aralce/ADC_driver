@@ -9,11 +9,14 @@
 #define ADC_I2C_PORT 0
 const uint8_t default_address = 0x69;
 
-void ADC_MCP342x_driver::initialize() {
+void ADC_MCP342x_driver::initialize(int sda, int scl) {
     char tag[] = "ADC_MCP342x_driver_ESP_IDF";
+    int _sda = sda != -1 ? sda : 21;
+    int _scl = scl != -1 ? scl : 22;
     esp_err_t err = ESP_OK;
     do {
-        err = smbus_init(&smbus_info, ADC_I2C_PORT, default_address);
+        
+        err = smbus_init(&smbus_info, _sda, _scl, ADC_I2C_PORT, default_address);
         vTaskDelay(1);
 
         mcp342x_config.channel = MCP342X_CHANNEL_1;

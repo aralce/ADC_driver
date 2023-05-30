@@ -38,6 +38,18 @@ TEST(ADC_ADS1115_driver_esp32_arduino, initialize_ADC_driver_with_no_issues_and_
     adc_driver->initialize();
 }
 
+TEST(ADC_ADS1115_driver_esp32_arduino, GIVEN_system_is_not_initialized_THEN_initialize_system_with_sda_and_scl_i2c_pins)
+{
+    const uint8_t SCL = 2;
+    const uint8_t SDA = 15;
+    mock().expectOneCall("TwoWire->setPins")
+          .withIntParameter("sda", SDA)
+          .withIntParameter("scl", SCL);
+    mock().ignoreOtherCalls();
+
+    adc_driver->initialize(SDA, SCL);
+}
+
 TEST(ADC_ADS1115_driver_esp32_arduino, if_begin_fails_then_shows_a_message_and_hangs_the_micro_controller)
 {
     mock().expectOneCall("Adafruit_ADS1115->begin")

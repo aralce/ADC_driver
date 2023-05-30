@@ -4,12 +4,18 @@
 
 #include <Arduino.h>
 
+#if defined(IS_RUNNING_TESTS)
+    #include <Wire.h>
+#endif
+
 #define SERIAL_PORT_BAUDRATE    115200UL
 
-void ADC_ADS1115_driver::initialize() {
+void ADC_ADS1115_driver::initialize(int sda, int scl) {
     Serial.begin(SERIAL_PORT_BAUDRATE);
 
     adc_driver.setGain(GAIN_ONE);
+    if (sda != -1 && scl != -1)
+        Wire.setPins(sda, scl);
     
     if (adc_driver.begin() == false) {
         Serial.println("--Sensor_logger-- Failed to initialize external ADC ads1x15. Please, check the I2C connections and restart micro-controller.");

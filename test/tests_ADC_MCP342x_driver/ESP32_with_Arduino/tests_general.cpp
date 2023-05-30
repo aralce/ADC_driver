@@ -56,6 +56,19 @@ TEST(ADC_MCP342x_driver, initialize_ADC_driver_with_no_issues_and_INITIALIZE_SER
     adc_driver.initialize();
 }
 
+TEST(ADC_MCP342x_driver, GIVEN_system_is_not_initialized_WHEN_initialize_THEN_set_sda_and_scl_pins_on_I2C)
+{
+    const int SCL = 2;
+    const int SDA = 15;
+
+    mock().expectOneCall("TwoWire->setPins")
+          .withIntParameter("sda", SDA)
+          .withIntParameter("scl", SCL);
+    mock().ignoreOtherCalls();
+
+    adc_driver->initialize(SDA, SCL);
+}
+
 TEST(ADC_MCP342x_driver, if_begin_fails_then_shows_a_message_and_hangs_the_micro_controller)
 {
     mock().expectOneCall("MCP342x->autoprobe")

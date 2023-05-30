@@ -197,7 +197,7 @@ void smbus_free(smbus_info_t ** smbus_info)
     }
 }
 
-esp_err_t smbus_init(smbus_info_t * smbus_info, i2c_port_t i2c_port, i2c_address_t address)
+esp_err_t smbus_init(smbus_info_t * smbus_info, int sda, int scl,  i2c_port_t i2c_port, i2c_address_t address)
 {
     if (smbus_info != NULL)
     {
@@ -212,9 +212,9 @@ esp_err_t smbus_init(smbus_info_t * smbus_info, i2c_port_t i2c_port, i2c_address
         if (is_i2c_init[i2c_port] == false) {
           i2c_config_t i2c_config = {
             .mode = I2C_MODE_MASTER,
-            .sda_io_num = GPIO_NUM_21,
+            .sda_io_num = sda,
             .sda_pullup_en = GPIO_PULLUP_ENABLE,
-            .scl_io_num = GPIO_NUM_22,
+            .scl_io_num = scl,
             .scl_pullup_en = GPIO_PULLUP_ENABLE,
             .master.clk_speed = 100000L,
             .clk_flags = 0,

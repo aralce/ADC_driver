@@ -77,7 +77,7 @@ void smbus_free(smbus_info_t ** smbus_info);
  * @param[in] i2c_port I2C port to associate with this SMBus instance.
  * @param[in] address Address of I2C slave device.
  */
-esp_err_t smbus_init(smbus_info_t * smbus_info, i2c_port_t i2c_port, i2c_address_t address);
+esp_err_t smbus_init(smbus_info_t * smbus_info, int sda, int scl,  i2c_port_t i2c_port, i2c_address_t address);
 
 /**
  * @brief Set the I2C timeout.

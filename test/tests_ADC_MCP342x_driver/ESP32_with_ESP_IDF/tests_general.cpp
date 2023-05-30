@@ -5,7 +5,8 @@
 
 #include <esp_log.h>
 
-ADC_MCP342x_driver* adc_driver = nullptr;
+ADC_driver_api* adc_driver = nullptr;
+// ADC_MCP342x_driver* adc_driver = nullptr;
 
 TEST_GROUP(ADC_MCP342x_driver_ESP_IDF)
 {
@@ -46,6 +47,22 @@ TEST(ADC_MCP342x_driver_ESP_IDF, initialize_ADC_driver)
     adc_driver->initialize();
 }
 
+TEST(ADC_MCP342x_driver_ESP_IDF, GIVEN_system_is_not_initialized_WHEN_initialize_system_THEN_set_sda_and_scl_for_I2C)
+{
+    const int SCL = 2;
+    const int SDA = 15;
+    mock().expectOneCall("smbus_init")
+      .withIntParameter("sda", SDA)
+      .withIntParameter("scl", SCL)
+      .withIntParameter("i2c_port", 0)
+      .withIntParameter("address", ADC_ADDRESS)
+      .ignoreOtherParameters()
+      .andReturnValue(ESP_OK);
+    mock().ignoreOtherCalls();
+
+    adc_driver->initialize(SDA, SCL);
+}
+
 TEST(ADC_MCP342x_driver_ESP_IDF, GIVEN_initialize_ADC_driver_WHEN_init_has_issues_THEN_reinit_driver_and_log_message)
 {
     mock().expectNCalls(2, "ESP_LOGE")
@@ -62,6 +79,8 @@ TEST(ADC_MCP342x_driver_ESP_IDF, GIVEN_initialize_ADC_driver_WHEN_init_has_issue
 static void CHECK_adc_driver_initialization_functions_are_called(int smbus_return_value, int mcp342x_init_return_value)
 {
     mock().expectOneCall("smbus_init")
+          .withIntParameter("sda", 21)
+          .withIntParameter("scl", 22)
           .withIntParameter("i2c_port", 0)
           .withIntParameter("address", ADC_ADDRESS)
           .ignoreOtherParameters()

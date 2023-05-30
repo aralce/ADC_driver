@@ -15,7 +15,7 @@
 
 class ADC_ADS1115_driver : public ADC_driver_api {
 public:
-    void initialize() override;
+    void initialize(int sda = GPIO_NUM_21, int scl = GPIO_NUM_22) override;
 
     void start_new_single_reading() override;
 

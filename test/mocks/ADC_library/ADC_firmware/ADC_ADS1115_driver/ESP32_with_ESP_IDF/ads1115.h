@@ -115,10 +115,12 @@ typedef struct {
 typedef uint32_t TickType_t;
 
 // initialize device
-inline ads1115_t ads1115_config(int i2c_port, uint8_t address) // set up configuration
+inline ads1115_t ads1115_config(int i2c_port, int sda, int scl, uint8_t address) // set up configuration
 {
     mock().actualCall("ads1115_config")
           .withIntParameter("i2c_port", i2c_port)
+          .withIntParameter("sda", sda)
+          .withIntParameter("scl", scl)
           .withUnsignedIntParameter("address", address);
     ads1115_t return_value;
     return return_value;

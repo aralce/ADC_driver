@@ -6,8 +6,10 @@
 
 const uint8_t default_address = 0x69;
 
-void ADC_MCP342x_driver::initialize() {
+void ADC_MCP342x_driver::initialize(int sda, int scl) {
     Serial.begin(115200);
+    if (sda != -1 && scl != -1)
+        Wire.setPins(sda, scl);
     Wire.begin();
 
     MCP342x::generalCallReset();

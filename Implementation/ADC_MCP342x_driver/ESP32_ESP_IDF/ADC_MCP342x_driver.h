@@ -12,7 +12,7 @@
 
 class ADC_MCP342x_driver : public ADC_driver_api {
 public:
-    void initialize() override;
+    void initialize(int sda = 21, int scl = 22) override;
     
     void start_new_single_reading() override;
 

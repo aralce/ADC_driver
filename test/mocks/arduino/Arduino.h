@@ -49,12 +49,12 @@ public:
     }
 };
 
-class Wire_class {
-public:
-    void begin();
-};
+// class Wire_class {
+// public:
+//     void begin();
+// };
 
-extern Wire_class Wire;
+// extern Wire_class Wire;
 extern Serial_class Serial;
 extern ESP_class ESP;
 

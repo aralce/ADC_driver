@@ -5,8 +5,10 @@
 
 #define ADS1X15_ADDRESS (0x48) ///< 1001 000 (ADDR = GND)
 #define I2C_PORT 0
-void ADC_ADS1115_driver::initialize() {
-    adc_driver = ads1115_config(I2C_PORT, ADS1X15_ADDRESS);
+void ADC_ADS1115_driver::initialize(int sda, int scl) {
+    int _sda = sda != -1 ? sda : GPIO_NUM_21;
+    int _scl = scl != -1 ? scl : GPIO_NUM_22;
+    adc_driver = ads1115_config(I2C_PORT, _sda, _scl, ADS1X15_ADDRESS);
     ads1115_set_mux(&adc_driver, ADS1115_MUX_0_GND);
     ads1115_set_pga(&adc_driver, ADS1115_FSR_4_096);
     ads1115_set_mode(&adc_driver, ADS1115_MODE_SINGLE);

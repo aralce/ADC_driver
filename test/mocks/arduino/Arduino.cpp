@@ -86,10 +86,10 @@ void Serial_class::println(const char* msg) {
           .withStringParameter("msg", msg);
 }
 
-void Wire_class::begin() {
-    mock().actualCall("Wire->begin");
-}
+// void Wire_class::begin() {
+//     mock().actualCall("Wire->begin");
+// }
 
-Wire_class Wire;
+// Wire_class Wire;
 Serial_class Serial;
 ESP_class ESP;

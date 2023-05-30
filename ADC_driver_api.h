@@ -6,7 +6,7 @@ class ADC_driver_api {
 public:
     virtual ~ADC_driver_api() {}
 
-    virtual void initialize() = 0;
+    virtual void initialize(int sda = -1, int scl = -1) = 0;
     
     virtual void start_new_single_reading() = 0;
 

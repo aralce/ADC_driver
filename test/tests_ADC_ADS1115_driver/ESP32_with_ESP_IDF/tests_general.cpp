@@ -24,9 +24,12 @@ TEST_GROUP(ADC_ADS1115_driver_esp32_esp_idf)
     }
 };
 
-TEST(ADC_ADS1115_driver_esp32_esp_idf, initialize_ADC_driver) {
+TEST(ADC_ADS1115_driver_esp32_esp_idf, initialize_ADC_driver)
+{
     const int I2C_PORT = 0;
     mock().expectOneCall("ads1115_config")
+          .withIntParameter("sda", GPIO_NUM_21)
+          .withIntParameter("scl", GPIO_NUM_22)
           .withIntParameter("i2c_port", I2C_PORT)
           .withUnsignedIntParameter("address", ADS1X15_ADDRESS);
     
@@ -47,6 +50,20 @@ TEST(ADC_ADS1115_driver_esp32_esp_idf, initialize_ADC_driver) {
           .ignoreOtherParameters();
 
     adc_driver->initialize();
+}
+
+TEST(ADC_ADS1115_driver_esp32_esp_idf, GIVEN_system_is_not_initialized_WHEN_initialize_THEN_config_sda_and_scl)
+{
+    const int SDA = 15;
+    const int SCL = 2;
+    mock().expectOneCall("ads1115_config")
+          .withIntParameter("sda", SDA)
+          .withIntParameter("scl", SCL)
+          .withIntParameter("i2c_port", 0)
+          .withUnsignedIntParameter("address", ADS1X15_ADDRESS);
+    mock().ignoreOtherCalls();
+
+    adc_driver->initialize(SDA, SCL);
 }
 
 TEST(ADC_ADS1115_driver_esp32_esp_idf, default_input_channel_is_ADC_DRIVER_CHANNEL_1)
