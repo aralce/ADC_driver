@@ -86,7 +86,7 @@ typedef struct {
 } ads1115_t;
 
 // initialize device
-ads1115_t ads1115_config(i2c_port_t i2c_port = 0, int sda = GPIO_NUM_21, int scl = GPIO_NUM_22, uint8_t address = 0x48); // set up configuration
+ads1115_t ads1115_config(i2c_port_t i2c_port, int sda, int scl, uint8_t address); // set up configuration
 
 // set configuration
 void ads1115_set_mux(ads1115_t* ads, ads1115_mux_t mux); // set multiplexer

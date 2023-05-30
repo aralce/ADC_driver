@@ -56,6 +56,21 @@ static esp_err_t ads1115_read_register(ads1115_t* ads, ads1115_register_addresse
 }
 
 ads1115_t ads1115_config(i2c_port_t i2c_port, int sda, int scl, uint8_t address) {
+    int _i2c_port = i2c_port;
+    if(i2c_port <= 0) {
+        _i2c_port = 0;
+    }
+
+    int _sda = sda;
+    if(sda <= 0) {
+        _sda = GPIO_NUM_21;
+    }
+
+    int _scl = scl;
+    if(scl <= 0) {
+        scl = GPIO_NUM_22;
+    }
+
   ads1115_t ads; // setup configuration with default values
   ads.config.bit.OS = 1; // always start conversion
   ads.config.bit.MUX = ADS1115_MUX_0_GND;
@@ -80,9 +95,9 @@ ads1115_t ads1115_config(i2c_port_t i2c_port, int sda, int scl, uint8_t address)
   if (is_i2c_init[i2c_port] == false) {
     i2c_config_t i2c_config = {
       .mode = I2C_MODE_MASTER,
-      .sda_io_num = sda,
+      .sda_io_num = _sda,
       .sda_pullup_en = GPIO_PULLUP_ENABLE,
-      .scl_io_num = scl,
+      .scl_io_num = _scl,
       .scl_pullup_en = GPIO_PULLUP_ENABLE,
       .master.clk_speed = 100000L,
       .clk_flags = 0,

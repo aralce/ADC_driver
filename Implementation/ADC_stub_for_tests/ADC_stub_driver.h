@@ -6,7 +6,7 @@ extern float measured_voltage;
 
 class ADC_stub : public ADC_driver_api {
 public:
-    void initialize() override {}
+    void initialize(int sda = -1, int scl = -1) override {}
     
     void start_new_single_reading() override {}
 
