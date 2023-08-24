@@ -82,7 +82,7 @@ ads1115_t ads1115_config(i2c_port_t i2c_port, int sda, int scl, uint8_t address)
   ads.config.bit.COMP_LAT = 0;
   ads.config.bit.COMP_QUE = 0b11;
 
-  ads.i2c_port = i2c_port; // save i2c port
+  ads.i2c_port = _i2c_port; // save i2c port
   ads.address = address; // save i2c address
   ads.rdy_pin.in_use = 0; // state that rdy_pin not used
   ads.last_reg = ADS1115_MAX_REGISTER_ADDR; // say that we accessed invalid register last
