@@ -21,7 +21,7 @@ void ADC_MCP342x_driver::initialize(int sda, int scl) {
 
         mcp342x_config.channel = MCP342X_CHANNEL_1;
         mcp342x_config.conversion_mode = MCP342X_MODE_ONESHOT;
-        mcp342x_config.sample_rate = MCP342X_SRATE_14BIT;
+        mcp342x_config.sample_rate = MCP342X_SRATE_12BIT;
         mcp342x_config.gain = MCP342X_GAIN_1X;
     
         err |= mcp342x_init(&mcp342x_info, &smbus_info, mcp342x_config);
