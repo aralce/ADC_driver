@@ -40,7 +40,7 @@ bool ADC_ADS1115_driver::is_conversion_complete() {
 }
 
 #define DO_NOT_WAIT_FOR_CONVERSION  false
-float ADC_ADS1115_driver::get_measured_voltage() {
+double ADC_ADS1115_driver::get_measured_voltage() {
     return ads1115_get_voltage(&adc_driver);
 }
 

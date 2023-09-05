@@ -57,7 +57,7 @@ bool ADC_MCP342x_driver::is_conversion_complete() {
 #define LEAST_SIGNIFICANT_BIT_VALUE_ON_14_BIT_RESOLUTION 250e-6
 const char read_status[6][27] {"MCP342X_STATUS_OK", "MCP342X_STATUS_UNDERFLOW", "MCP342X_STATUS_OVERFLOW", "MCP342X_STATUS_I2C", "MCP342X_STATUS_IN_PROGRESS", "MCP342X_STATUS_TIMEOUT"};
 
-float ADC_MCP342x_driver::get_measured_voltage() {
+double ADC_MCP342x_driver::get_measured_voltage() {
     double voltage_measured;
     mcp342x_read_voltage(&mcp342x_info, &voltage_measured);
     // mcp342x_conversion_status_t status = mcp342x_read_voltage(&mcp342x_info, &voltage_measured);

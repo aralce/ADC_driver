@@ -15,7 +15,7 @@ public:
 
     bool is_conversion_complete() override {return true;}
     
-    float get_measured_voltage() override {return measured_voltage;}
+    double get_measured_voltage() override {return measured_voltage;}
 
     void set_samples_per_second(uint16_t rate) override {}
 

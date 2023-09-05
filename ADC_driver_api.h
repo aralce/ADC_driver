@@ -15,7 +15,7 @@ public:
 
     virtual bool is_conversion_complete() = 0;
     
-    virtual float get_measured_voltage() = 0;
+    virtual double get_measured_voltage() = 0;
 
     virtual void set_samples_per_second(uint16_t rate) = 0;
 };
