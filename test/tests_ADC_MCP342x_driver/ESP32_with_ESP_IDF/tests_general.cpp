@@ -35,7 +35,7 @@ TEST_GROUP(ADC_MCP342x_driver_ESP_IDF)
 mcp342x_config_t default_config = {
     .channel = MCP342X_CHANNEL_1,
     .conversion_mode = MCP342X_MODE_ONESHOT,
-    .sample_rate = MCP342X_SRATE_14BIT,
+    .sample_rate = MCP342X_SRATE_12BIT,
     .gain = MCP342X_GAIN_1X
 };
 

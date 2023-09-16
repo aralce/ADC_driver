@@ -53,7 +53,7 @@ bool ADC_MCP342x_driver::is_conversion_complete() {
 }
 
 #define LEAST_SIGNIFICANT_BIT_VALUE_ON_14_BIT_RESOLUTION 250e-6
-float ADC_MCP342x_driver::get_measured_voltage() {
+double ADC_MCP342x_driver::get_measured_voltage() {
     adc_driver.read(reading_result, reading_status);
     return reading_result*LEAST_SIGNIFICANT_BIT_VALUE_ON_14_BIT_RESOLUTION;
 }

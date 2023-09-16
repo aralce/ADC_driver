@@ -48,7 +48,7 @@ bool ADC_ADS1115_driver::is_conversion_complete() {
     return adc_driver.conversionComplete();
 }
 
-float ADC_ADS1115_driver::get_measured_voltage() {
+double ADC_ADS1115_driver::get_measured_voltage() {
     int16_t raw_value = adc_driver.getLastConversionResults();
     return adc_driver.computeVolts(raw_value);
 }
